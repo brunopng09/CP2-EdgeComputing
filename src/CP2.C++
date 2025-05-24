@@ -21,6 +21,7 @@ const int btnNavegar = 3;
 const int btnTemp = 4;
 const int LDR = A0;
 const int ledVerde = 10;
+// const int ledAmarelo = 11;      // Removido LED amarelo
 const int ledVermelho = 12;
 const int alarme = 13;
 
@@ -101,6 +102,7 @@ void setup() {
   pinMode(btnNavegar, INPUT_PULLUP);
   pinMode(btnTemp, INPUT_PULLUP);
   pinMode(ledVerde, OUTPUT);
+  // pinMode(ledAmarelo, OUTPUT);  // Removido
   pinMode(ledVermelho, OUTPUT);
   pinMode(alarme, OUTPUT);
 
@@ -191,22 +193,30 @@ void exibirStatusAmbiente() {
   lcd.print("Status:");
 
   if (!isnan(temp) && !isnan(umid)) {
-    if (temp >= 22 && temp <= 26 && umid >= 40 && umid <= 60 && luzPercent >= 40 && luzPercent <= 80) {
+    // Critérios para ambiente bom
+    bool tempBom = (temp >= 22 && temp <= 26);
+    bool umidBom = (umid >= 40 && umid <= 60);
+    bool luzBoa = (luzPercent >= 40 && luzPercent <= 80);
+
+    if (tempBom && umidBom && luzBoa) {
       digitalWrite(ledVerde, HIGH);
       digitalWrite(ledVermelho, LOW);
       lcd.setCursor(0, 1);
-      lcd.print("Ambiente OK  ");
+      lcd.print("Ambiente OK    ");
       desligarAlarme();
     } else {
       digitalWrite(ledVerde, LOW);
       digitalWrite(ledVermelho, HIGH);
       lcd.setCursor(0, 1);
-      lcd.print("Ambiente Ruim");
+      lcd.print("Ambiente Ruim  ");
       ligarAlarme();
     }
   } else {
     lcd.setCursor(0, 1);
-    lcd.print("Erro Sensor  ");
+    lcd.print("Erro Sensor    ");
+    digitalWrite(ledVerde, LOW);
+    digitalWrite(ledVermelho, LOW);
+    desligarAlarme();
   }
 }
 
